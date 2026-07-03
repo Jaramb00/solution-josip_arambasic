@@ -9,3 +9,5 @@ select = ["E", "F", "W", "I", "UP", "B"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
