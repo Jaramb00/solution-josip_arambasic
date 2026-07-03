@@ -53,3 +53,20 @@ async def search_tickets(
 
 async def get_ticket(session: AsyncSession, ticket_id: int) -> Ticket | None:
     return await session.get(Ticket, ticket_id)
+
+async def create_ticket(session: AsyncSession, data: dict) -> Ticket:
+    """Kreira novi ticket (id dodjeljuje baza) i vraća pohranjeni zapis."""
+    ticket = Ticket(**data)
+    session.add(ticket)
+    await session.commit()
+    await session.refresh(ticket)
+    return ticket
+
+
+async def update_ticket(session: AsyncSession, ticket: Ticket, changes: dict) -> Ticket:
+    """Primjenjuje izmjene na postojeći ticket i trajno ih pohranjuje."""
+    for field, value in changes.items():
+        setattr(ticket, field, value)
+    await session.commit()
+    await session.refresh(ticket)
+    return ticket

@@ -11,8 +11,10 @@ from tickethub.schemas import (
     PaginatedTickets,
     Priority,
     Status,
+    TicketCreate,
     TicketDetail,
     TicketListItem,
+    TicketUpdate,
 )
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
@@ -74,4 +76,29 @@ async def get_ticket(
         raise HTTPException(
             status_code=http_status.HTTP_404_NOT_FOUND, detail="Ticket nije pronađen"
         )
+    return ticket
+
+@router.post("", response_model=TicketDetail, status_code=http_status.HTTP_201_CREATED)
+async def create_ticket(
+    payload: TicketCreate, session: AsyncSession = Depends(get_session)
+) -> Ticket:
+    """Kreira novi ticket (id dodjeljuje baza)."""
+    return await crud.create_ticket(session, payload.model_dump())
+
+
+@router.patch("/{ticket_id}", response_model=TicketDetail)
+async def update_ticket(
+    ticket_id: int,
+    payload: TicketUpdate,
+    session: AsyncSession = Depends(get_session),
+) -> Ticket:
+    """Izmjena ticketa (status/priority/assignee); promjena preživljava restart."""
+    ticket = await crud.get_ticket(session, ticket_id)
+    if ticket is None:
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND, detail="Ticket nije pronađen"
+        )
+    changes = payload.model_dump(exclude_unset=True)
+    if changes:
+        ticket = await crud.update_ticket(session, ticket, changes)
     return ticket

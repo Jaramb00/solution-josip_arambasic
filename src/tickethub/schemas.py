@@ -47,3 +47,23 @@ class PaginatedTickets(BaseModel):
     limit: int
     offset: int
     items: list[TicketListItem]
+
+class TicketCreate(BaseModel):
+    """Ulaz za POST /tickets."""
+
+    model_config = ConfigDict(use_enum_values=True)
+
+    title: str = Field(min_length=1, max_length=255)
+    status: Status = Status.open
+    priority: Priority = Priority.medium
+    assignee: str | None = None
+
+
+class TicketUpdate(BaseModel):
+    """Ulaz za PATCH /tickets/{id} (sva polja opcionalna)."""
+
+    model_config = ConfigDict(use_enum_values=True)
+
+    status: Status | None = None
+    priority: Priority | None = None
+    assignee: str | None = None
