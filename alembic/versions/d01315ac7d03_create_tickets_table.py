@@ -1,7 +1,7 @@
 """create tickets table
 
 Revision ID: d01315ac7d03
-Revises: 
+Revises:
 Create Date: 2026-07-03 14:11:21.479031
 
 """
@@ -26,8 +26,10 @@ def upgrade() -> None:
     sa.Column('priority', sa.String(), nullable=False),
     sa.Column('assignee', sa.String(), nullable=True),
     sa.Column('source', sa.JSON(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True),
+              server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True),
+              server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_tickets_priority'), 'tickets', ['priority'], unique=False)
