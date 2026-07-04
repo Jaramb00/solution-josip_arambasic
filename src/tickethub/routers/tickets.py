@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from tickethub import crud
 from tickethub.auth import require_auth
+from tickethub.cache import stats_cache
 from tickethub.database import get_session
 from tickethub.models import Ticket
 from tickethub.schemas import (
@@ -88,8 +89,10 @@ async def get_ticket(
 async def create_ticket(
     payload: TicketCreate, session: AsyncSession = Depends(get_session)
 ) -> Ticket:
-    """Kreira novi ticket (id dodjeljuje baza)."""
-    return await crud.create_ticket(session, payload.model_dump())
+    """Kreira novi ticket (id dodjeljuje baza). Zahtijeva JWT."""
+    ticket = await crud.create_ticket(session, payload.model_dump())
+    stats_cache.clear()  # statistike su zastarjele
+    return ticket
 
 
 @router.patch(
@@ -102,7 +105,7 @@ async def update_ticket(
     payload: TicketUpdate,
     session: AsyncSession = Depends(get_session),
 ) -> Ticket:
-    """Izmjena ticketa (status/priority/assignee); promjena preživljava restart."""
+    """Izmjena ticketa (status/priority/assignee); promjena preživljava restart. Zahtijeva JWT."""
     ticket = await crud.get_ticket(session, ticket_id)
     if ticket is None:
         raise HTTPException(
@@ -111,4 +114,5 @@ async def update_ticket(
     changes = payload.model_dump(exclude_unset=True)
     if changes:
         ticket = await crud.update_ticket(session, ticket, changes)
+        stats_cache.clear()
     return ticket

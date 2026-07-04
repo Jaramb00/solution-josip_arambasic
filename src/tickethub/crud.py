@@ -70,3 +70,20 @@ async def update_ticket(session: AsyncSession, ticket: Ticket, changes: dict) ->
     await session.commit()
     await session.refresh(ticket)
     return ticket
+
+async def get_stats(session: AsyncSession) -> dict:
+    """Agregirane statistike: ukupno te broj po statusu i prioritetu."""
+    total = int((await session.execute(select(func.count()).select_from(Ticket))).scalar_one())
+
+    status_rows = (
+        await session.execute(select(Ticket.status, func.count()).group_by(Ticket.status))
+    ).all()
+    priority_rows = (
+        await session.execute(select(Ticket.priority, func.count()).group_by(Ticket.priority))
+    ).all()
+
+    return {
+        "total": total,
+        "by_status": {status: count for status, count in status_rows},
+        "by_priority": {priority: count for priority, count in priority_rows},
+    }
