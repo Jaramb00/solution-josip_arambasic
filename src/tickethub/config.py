@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+
     model_config = SettingsConfigDict(env_file=".env", env_prefix="TICKETHUB_", extra="ignore")
 
     database_url: str = "sqlite+aiosqlite:///./tickethub.db"
@@ -11,6 +12,11 @@ class Settings(BaseSettings):
 
     # Pri pokretanju automatski napuni bazu iz vanjskog izvora ako je prazna.
     sync_on_startup: bool = True
+
+    # JWT autentifikacija.
+    jwt_secret: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 60
 
 
 settings = Settings()

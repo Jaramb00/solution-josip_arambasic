@@ -7,7 +7,7 @@ from fastapi import FastAPI
 
 from tickethub.config import settings
 from tickethub.database import SessionLocal
-from tickethub.routers import tickets
+from tickethub.routers import auth, tickets
 from tickethub.services.sync import sync_if_empty
 
 logging.basicConfig(
@@ -38,3 +38,4 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 app.include_router(tickets.router)
+app.include_router(auth.router)

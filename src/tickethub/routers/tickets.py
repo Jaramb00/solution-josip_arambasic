@@ -5,6 +5,7 @@ from fastapi import status as http_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tickethub import crud
+from tickethub.auth import require_auth
 from tickethub.database import get_session
 from tickethub.models import Ticket
 from tickethub.schemas import (
@@ -78,7 +79,12 @@ async def get_ticket(
         )
     return ticket
 
-@router.post("", response_model=TicketDetail, status_code=http_status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=TicketDetail,
+    status_code=http_status.HTTP_201_CREATED,
+    dependencies=[Depends(require_auth)],
+)
 async def create_ticket(
     payload: TicketCreate, session: AsyncSession = Depends(get_session)
 ) -> Ticket:
@@ -86,7 +92,11 @@ async def create_ticket(
     return await crud.create_ticket(session, payload.model_dump())
 
 
-@router.patch("/{ticket_id}", response_model=TicketDetail)
+@router.patch(
+    "/{ticket_id}",
+    response_model=TicketDetail,
+    dependencies=[Depends(require_auth)],
+)
 async def update_ticket(
     ticket_id: int,
     payload: TicketUpdate,

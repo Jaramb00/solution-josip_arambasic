@@ -67,3 +67,12 @@ class TicketUpdate(BaseModel):
     status: Status | None = None
     priority: Priority | None = None
     assignee: str | None = None
+
+class LoginRequest(BaseModel):
+    username: str = Field(min_length=1)
+    password: str = Field(min_length=1)
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

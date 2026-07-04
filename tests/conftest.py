@@ -2,10 +2,12 @@
 
 from collections.abc import AsyncIterator
 
+import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from tickethub.auth import create_access_token
 from tickethub.database import Base, get_session
 from tickethub.main import app
 from tickethub.models import Ticket
@@ -48,3 +50,9 @@ async def client(session_factory) -> AsyncIterator[AsyncClient]:
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
     app.dependency_overrides.clear()
+
+@pytest.fixture
+def auth_headers() -> dict[str, str]:
+    """Bearer header s valjanim vlastitim JWT-om (bez mrežnog poziva)."""
+    token = create_access_token(subject="tester")
+    return {"Authorization": f"Bearer {token}"}
