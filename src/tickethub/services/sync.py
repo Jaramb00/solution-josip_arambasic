@@ -1,11 +1,12 @@
 """Seed/sync logika: puni lokalnu bazu iz vanjskog izvora (DummyJSON)."""
 
+import asyncio
 import logging
 
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from tickethub.models import Ticket
 from tickethub.services.dummyjson import fetch_tickets
@@ -54,3 +55,23 @@ async def sync_if_empty(session: AsyncSession) -> int:
         logger.info("Baza već sadrži tickete, preskačem startup sync.")
         return 0
     return await sync_tickets(session)
+
+async def periodic_sync(
+    session_factory: async_sessionmaker[AsyncSession], interval_seconds: int
+) -> None:
+    """Pozadinski job koji periodički osvježava podatke iz izvora.
+
+    Pokreće se kao asyncio task; prekida se (CancelledError) na gašenju app-a.
+    """
+    logger.info("Pozadinski sync pokrenut (svakih %d s).", interval_seconds)
+    try:
+        while True:
+            await asyncio.sleep(interval_seconds)
+            try:
+                async with session_factory() as session:
+                    await sync_tickets(session)
+            except Exception:
+                logger.exception("Pozadinski sync nije uspio; pokušavam ponovno kasnije.")
+    except asyncio.CancelledError:
+        logger.info("Pozadinski sync zaustavljen.")
+        raise

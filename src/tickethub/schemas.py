@@ -81,3 +81,6 @@ class Stats(BaseModel):
     total: int
     by_status: dict[str, int]
     by_priority: dict[str, int]
+
+class SyncResult(BaseModel):
+    synced: int

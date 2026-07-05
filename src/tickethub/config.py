@@ -20,6 +20,12 @@ class Settings(BaseSettings):
 
     cache_ttl_seconds: int = 30
 
+    sync_interval_seconds: int = 0
+
+    rate_limit: str = "120/minute"
+
+    log_level: str = "INFO"
+
 
 
 settings = Settings()
