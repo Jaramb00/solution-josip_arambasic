@@ -12,9 +12,9 @@ Alembic · pytest. SQLite (dev), opcionalno PostgreSQL.
 - [x] **1. Temelji** — scaffold, config, async database, `Ticket` model, Alembic migracija
 - [x] **2. Sync** — DummyJSON klijent, transformacija polja, punjenje baze na startupu
 - [x] **3. Read endpointi** — paginirana lista, detalji, filtriranje, pretraga
-- [ ] **4. Write endpointi** — POST + PATCH (validacija, perzistencija kroz restart)
-- [ ] **5. Nice-to-have** — /stats, JWT auth, caching, rate limiting, logiranje, health-check, background sync
-- [ ] **6. Isporuka** — Docker, CI, README, statička OpenAPI dokumentacija
+- [x] **4. Write endpointi** — POST + PATCH (validacija, perzistencija kroz restart)
+- [x] **5. Nice-to-have** — /stats, JWT auth, caching, rate limiting, logiranje, health-check, background sync
+- [x] **6. Isporuka** — Docker, CI, README, statička OpenAPI dokumentacija
 
 ## Prioritizacija
 
