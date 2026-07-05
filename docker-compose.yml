@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      TICKETHUB_DATABASE_URL: sqlite+aiosqlite:////app/data/tickethub.db
+    volumes:
+      - tickethub-data:/app/data
+
+volumes:
+  tickethub-data:
