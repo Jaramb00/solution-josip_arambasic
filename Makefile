@@ -23,3 +23,6 @@ docker-up:
 
 docker-down:
 	docker compose down
+
+docs:
+	python scripts/export_openapi.py	
